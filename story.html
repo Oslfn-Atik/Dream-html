@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dreamscape — a fantasy world of ancient magic, forgotten kingdoms, and hidden secrets." />
+  <title>Dreamscape — Enter the Unknown</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #080d25;
+      --bg-soft: #0e1430;
+      --text: #e8eaf6;
+      --muted: #a3a9c7;
+      --accent: #8fb8ff;
+      --accent-strong: #5f8dff;
+      --gold: #e5c07b;
+      --radius: 16px;
+      --shadow-lg: 0 20px 45px rgba(0, 0, 0, 0.55);
+      --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 400;
+      line-height: 1.65;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      line-height: 1.15;
+      margin: 0 0 0.5em;
+      letter-spacing: 0.5px;
+    }
+
+    h1 { font-size: clamp(2.8rem, 8vw, 6rem); }
+    h2 { font-size: clamp(2rem, 4vw, 3rem); }
+    h3 { font-size: 1.4rem; color: var(--gold); }
+
+    p { margin: 0 0 1em; color: var(--muted); }
+
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ============ Background Video ============ */
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      filter: brightness(0.4) blur(3px);
+      transform: scale(1.06);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .bg-video.ready { opacity: 1; }
+
+    .video-overlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at center, rgba(8, 13, 37, 0.2), rgba(8, 13, 37, 0.85) 80%),
+        rgba(0, 0, 0, 0.25);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ============ Navbar ============ */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(8, 13, 37, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .brand span { color: var(--gold); }
+
+    .nav-links {
+      display: flex;
+      gap: 1.75rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      color: var(--muted);
+      font-size: 0.92rem;
+      letter-spacing: 0.5px;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover, .nav-links a:focus-visible { color: var(--text); }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .site-nav { padding: 1rem 1.25rem; }
+    }
+
+    /* ============ Layout ============ */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 6rem;
+    }
+
+    section { padding: 5rem 0; }
+
+    .section-head {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 3rem;
+    }
+    .section-head p { font-size: 1.05rem; }
+
+    /* ============ Hero ============ */
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 1rem;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      border: 1px solid rgba(229, 192, 123, 0.4);
+      border-radius: 999px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease) 0.1s forwards;
+    }
+
+    .hero h1 {
+      background: linear-gradient(180deg, #ffffff 30%, #a9bcff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      animation: fadeUp 1s var(--ease) 0.25s forwards;
+    }
+
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+      color: var(--muted);
+      font-style: italic;
+      max-width: 620px;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 1s var(--ease) 0.4s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp 1s var(--ease) 0.55s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      background: linear-gradient(135deg, var(--accent-strong), #7a63ff);
+      color: white;
+      font-weight: 600;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(95, 141, 255, 0.35);
+      transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+    }
+    .btn-primary:hover, .btn-primary:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 36px rgba(95, 141, 255, 0.5);
+      outline: none;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      background: transparent;
+      color: var(--text);
+      font-weight: 500;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .btn-ghost:hover, .btn-ghost:focus-visible {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.4);
+      outline: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============ Story Section ============ */
+    .story {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .story-card {
+      background: rgba(14, 20, 48, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .story-card p:last-child { margin-bottom: 0; }
+
+    .story-card blockquote {
+      margin: 2rem 0 0;
+      padding: 1.2rem 1.5rem;
+      border-left: 3px solid var(--gold);
+      background: rgba(229, 192, 123, 0.06);
+      border-radius: 8px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text);
+    }
+
+    /* ============ Locations Grid ============ */
+    .location-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      justify-items: center;
+    }
+
+    /* ===== Image Button (main interactive element) ===== */
+    .img-btn {
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 1 / 1;
+      padding: 0;
+      border: none;
+      background: none;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+      outline: none;
+    }
+
+    .img-btn:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .img-btn:focus-visible {
+      box-shadow: 0 0 0 3px var(--accent), var(--shadow-lg);
+    }
+
+    .img-btn img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.7s var(--ease), opacity 0.7s var(--ease), filter 0.7s var(--ease);
+    }
+
+    .img-btn .btn-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 1.5rem;
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(180deg, rgba(8,13,37,0.6), rgba(8,13,37,0.85));
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+
+    .img-btn .btn-text .title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .img-btn .btn-text .desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Clicked / Active state — image "enters" the portal */
+    .img-btn.active img {
+      transform: scale(0.25) rotate(12deg);
+      opacity: 0;
+      filter: blur(6px);
+    }
+    .img-btn.active .btn-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .img-btn.active {
+      box-shadow: 0 0 0 1px rgba(229,192,123,0.4), var(--shadow-lg);
+    }
+
+    /* ============ Scroll Reveal ============ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============ Footer ============ */
+    .site-footer {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .site-footer .brand { display: block; margin-bottom: 0.5rem; font-size: 1.2rem; }
+
+    /* ============ Reduced Motion ============ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background Video -->
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="../images/hib.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+  <header class="site-nav">
+    <span class="brand">Dream<span>scape</span></span>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#story">The Story</a></li>
+        <li><a href="#locations">Locations</a></li>
+        <li><a href="map.html">Map</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Hero Section -->
+    <section class="hero" id="top">
+      <span class="hero-eyebrow">Chapter I · The Awakening</span>
+      <h1>Dreamscape</h1>
+      <p class="hero-sub">
+        Where dreams fall silent, and the ancient world begins to remember.
+      </p>
+      <div class="hero-actions">
+        <a href="map.html" class="btn-primary">Enter the World →</a>
+        <a href="#story" class="btn-ghost">Read the Legend</a>
+      </div>
+    </section>
+
+    <!-- Story Section -->
+    <section id="story" class="reveal">
+      <div class="section-head">
+        <h2>The Fractured Dreamscape</h2>
+        <p>A long-forgotten legend, whispered only in the halls of those who still dream.</p>
+      </div>
+
+      <article class="story">
+        <div class="story-card">
+          <h3>Chapter I — The Last Dreamer</h3>
+          <p>
+            Before the maps were drawn, before the first kings carved their names into stone,
+            there was only the Dreamscape — a living world woven from the sleeping minds of
+            every soul who ever closed their eyes. Every thought became a river. Every fear,
+            a shadow. Every hope, a floating city of light.
+          </p>
+          <p>
+            But dreams cannot last forever. When the last true Dreamer vanished from the waking
+            world, the Dreamscape began to crack. Forests turned to ash, moonlight dimmed, and
+            the ancient seals that once held the darkness at bay faltered one by one.
+          </p>
+
+          <h3>Chapter II — The Three Seals</h3>
+          <p>
+            The elders spoke of three sacred seals — each guarding a fragment of the Dreamer's
+            memory. Whosoever reawakens them shall restore the balance between worlds. But the
+            path is not for the timid. Each seal tests the traveller: the Seal of Memory, the
+            Seal of Courage, and the Seal of Truth.
+          </p>
+          <p>
+            Only one who carries a heart unbroken by fear may walk the fading paths and hear
+            the whispers of the old world once more.
+          </p>
+
+          <blockquote>
+            “The door only opens for those who dare to knock<br>
+            with a heart that still remembers how to dream.”
+          </blockquote>
+        </div>
+      </article>
+    </section>
+
+    <!-- Featured Locations -->
+    <section id="locations" class="reveal">
+      <div class="section-head">
+        <h2>Explore Magical Places</h2>
+        <p>Three fragments of the old world still stand. Touch each one — if you dare — to uncover its truth.</p>
+      </div>
+
+      <div class="location-grid">
+
+        <!-- Location 1 -->
+        <button class="img-btn reveal" data-location="forest" type="button" aria-label="The Whispering Forest — reveal lore">
+          <img src="../images/forest.jpg" alt="The Whispering Forest" loading="lazy">
+          <span class="btn-text">
+            <span class="title">Whispering Forest</span>
+            <span class="desc">Trees that remember every name ever spoken beneath them.</span>
+          </span>
+        </button>
+
+        <!-- Location 2 -->
+        <button class="img-btn reveal" data-location="realm" type="button" aria-label="The Forgotten Realm — reveal lore">
+          <img src="../images/hero.jpg" alt="The Forgotten Realm" loading="lazy">
+          <span class="btn-text">
+            <span class="title">The Forgotten Realm</span>
+            <span class="desc">A kingdom buried in mist — its crown, still waiting for a king.</span>
+          </span>
+        </button>
+
+        <!-- Location 3 -->
+        <button class="img-btn reveal" data-location="portal" type="button" aria-label="The Endless Portal — reveal lore">
+          <img src="../images/portal.jpg" alt="The Endless Portal" loading="lazy">
+          <span class="btn-text">
+            <span class="title">The Endless Portal</span>
+            <span class="desc">A doorway to nowhere — and, perhaps, to everywhere.</span>
+          </span>
+        </button>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <span class="brand">Dream<span>scape</span></span>
+    <p>Crafted in the quiet hours between dreams and dawn.</p>
+    <p style="font-size: 0.8rem;">© 2025 Dreamscape · All legends reserved.</p>
+  </footer>
+
+  <script>
+    // ==== Background Video fade-in ====
+    const video = document.querySelector('.bg-video');
+    video?.addEventListener('playing', () => video.classList.add('ready'));
+    video?.play().catch(err => console.log('Video autoplay blocked:', err));
+
+    // ==== Image Buttons: click + keyboard ====
+    const imgButtons = document.querySelectorAll('.img-btn');
+
+    function toggleImageButton(btn) {
+      btn.classList.toggle('active');
+
+      // Optional: after the reveal, redirect somewhere
+      // if (btn.classList.contains('active')) {
+      //   const dest = btn.dataset.location;
+      //   setTimeout(() => window.location.href = `map.html?loc=${dest}`, 1200);
+      // }
+    }
+
+    imgButtons.forEach(btn => {
+      btn.addEventListener('click', () => toggleImageButton(btn));
+
+      // Keyboard accessibility (Space / Enter) — <button> handles Enter/Space by default,
+      // but this keeps behaviour identical across browsers & custom triggers.
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleImageButton(btn);
+        }
+      });
+    });
+
+    // ==== Scroll reveal with IntersectionObserver ====
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    revealEls.forEach(el => io.observe(el));
+  </script>
+
+</body>
+</html>
